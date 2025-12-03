@@ -1,283 +1,55 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Browser Proxy — Simulator & Lightweight Client</title>
-<style>
-  :root{ --bg:#f6f9fb; --card:#ffffff; --muted:#6b7280; --accent:#0ea5e9; --ok:#10b981; --err:#ef4444; font-family:Inter,system-ui,Segoe UI,Roboto,Arial; color:#0f1724; }
-  body{ margin:0; min-height:100vh; background:linear-gradient(180deg,#e6eef6,#f8fbff); display:flex; align-items:flex-start; justify-content:center; padding:28px; }
-  .container{ width:100%; max-width:980px; }
-  header{ display:flex; align-items:center; gap:14px; margin-bottom:18px;}
-  .logo{ width:62px;height:62px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#60a5fa); display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:20px;box-shadow:0 6px 20px rgba(14,165,233,0.12); }
-  h1{ margin:0; font-size:20px; }
-  p.lead{ margin:2px 0 0; color:var(--muted); font-size:13px; }
-
-  .card{ background:var(--card); border-radius:12px; padding:16px; box-shadow:0 6px 30px rgba(2,6,23,0.06); border:1px solid rgba(15,23,36,0.04); }
-
-  .layout{ display:grid; grid-template-columns: 1fr 360px; gap:18px; align-items:start; }
-  @media (max-width:880px){ .layout{ grid-template-columns: 1fr; } }
-
-  form .row{ display:flex; gap:8px; align-items:center; margin-bottom:8px; }
-  label{ font-size:13px; color:var(--muted); min-width:110px; }
-  input[type="text"], select{ flex:1; padding:8px 10px; border-radius:8px; border:1px solid #e6eef6; font-size:14px; }
-  textarea{ width:100%; min-height:120px; padding:10px; border-radius:8px; border:1px solid #e6eef6; font-family:monospace; font-size:13px; color:#0f1724; }
-  button{ background:var(--accent); border:none; color:white; padding:10px 12px; border-radius:8px; cursor:pointer; font-weight:600; }
-  button.ghost{ background:transparent; color:var(--accent); border:1px solid rgba(14,165,233,0.12); }
-  .controls{ display:flex; gap:8px; }
-
-  .panel-title{ font-weight:700; margin:0 0 8px 0; }
-  .steps{ list-style:none; padding:0; margin:0; }
-  .step{ display:flex; gap:12px; padding:10px; border-radius:8px; align-items:flex-start; border:1px solid rgba(15,23,36,0.03); background:linear-gradient(180deg,rgba(14,165,233,0.02),transparent); }
-  .step + .step{ margin-top:8px; }
-  .badge{ width:34px;height:34px;border-radius:8px;background:rgba(14,165,233,0.08); display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--accent); }
-
-  .log{ background:#0b1220;color:#e6f0f6;border-radius:8px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:13px; max-height:360px; overflow:auto; }
-  .muted{ color:var(--muted); font-size:13px; }
-
-  .status{ font-weight:700; font-size:13px; padding:6px 8px;border-radius:8px; display:inline-block; }
-  .ok{ background:rgba(16,185,129,0.12); color:var(--ok); }
-  .bad{ background:rgba(239,68,68,0.08); color:var(--err); }
-
-  .small{ font-size:12px; color:var(--muted); }
-  .hint{ margin-top:10px; font-size:13px; color:var(--muted); }
-  .footer{ margin-top:12px; font-size:12px; color:var(--muted); display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap; }
-</style>
+  <meta charset="utf-8" />
+  <title>Simple PHP Web Proxy</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+    header { padding: 10px; background:#0b74da; color:white; display:flex; gap:8px; align-items:center; }
+    input[type="text"] { flex:1; padding:8px; border-radius:6px; border:none; }
+    button { padding:8px 12px; border-radius:6px; border:none; background:white; color:#0b74da; cursor:pointer; font-weight:600; }
+    #frame { flex:1; border:0; width:100%; }
+    .small { font-size:12px; opacity:.9; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="logo">PRX</div>
-      <div>
-        <h1>Browser Proxy — Simulator & Lightweight Client</h1>
-        <p class="lead">Visualize proxy steps and optionally forward fetches through a CORS-enabled proxy endpoint you provide.</p>
-      </div>
-    </header>
+  <header>
+    <form id="frm" style="display:flex; width:100%;" onsubmit="return go();">
+      <input id="url" type="text" placeholder="https://example.com" spellcheck="false" />
+      <button type="submit">Go</button>
+    </form>
+    <div style="margin-left:10px" class="small">Proxy</div>
+  </header>
 
-    <div class="card layout">
-      <div>
-        <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
-          <div style="flex:1;">
-            <p class="panel-title">Request builder</p>
-            <div class="small muted">Type a URL and choose whether to route via a proxy server.</div>
-          </div>
-          <div class="controls">
-            <button id="clearLogs" class="ghost">Clear log</button>
-          </div>
-        </div>
+  <iframe id="frame" sandbox="allow-same-origin allow-scripts allow-forms"></iframe>
 
-        <form id="reqForm" class="card" style="padding:12px;">
-          <div class="row">
-            <label for="target">Target URL</label>
-            <input id="target" type="text" placeholder="https://api.github.com/ (example)"/>
-          </div>
+  <script>
+    // If you want to load immediately from query param ?u=..., uncomment:
+    (function(){
+      const params = new URLSearchParams(location.search);
+      const u = params.get('u');
+      if(u) document.getElementById('url').value = u, go();
+    })();
 
-          <div class="row">
-            <label for="method">Method</label>
-            <select id="method">
-              <option>GET</option>
-              <option>POST</option>
-              <option>PUT</option>
-              <option>DELETE</option>
-            </select>
-            <label style="min-width:72px;">Content</label>
-            <select id="contentType">
-              <option value="">none</option>
-              <option value="application/json">application/json</option>
-              <option value="text/plain">text/plain</option>
-            </select>
-          </div>
-
-          <div class="row">
-            <label for="proxyUrl">Proxy endpoint</label>
-            <input id="proxyUrl" type="text" placeholder="Leave empty to simulate only (or enter your proxy server URL)" />
-          </div>
-
-          <div class="row">
-            <label for="anonymize">Anonymize</label>
-            <input id="anonymize" type="checkbox" title="If checked, the simulator will remove simulated client headers" />
-            <label style="min-width:120px;">Modify headers</label>
-            <input id="modifyHeaders" type="checkbox" />
-          </div>
-
-          <div style="margin-top:8px;">
-            <label class="small" for="body">Body (optional)</label>
-            <textarea id="body" placeholder='{"name":"Alice"}'></textarea>
-          </div>
-
-          <div style="margin-top:10px; display:flex; gap:8px;">
-            <button type="submit">Send request</button>
-            <button id="simulateBtn" type="button" class="ghost">Simulate only</button>
-          </div>
-
-          <div class="hint">
-            Note: For a real forward through a proxy, the proxy endpoint must accept cross-origin requests and expose CORS headers. This page does not act as a system proxy.
-          </div>
-        </form>
-
-        <div style="margin-top:12px;">
-          <p class="panel-title">Steps (what happens)</p>
-          <ol class="steps" aria-label="proxy steps" style="margin-top:8px;">
-            <li class="step"><div class="badge">1</div><div><strong>You request a webpage</strong><div class="small muted">Browser sends URL to the configured proxy (or simulates it).</div></div></li>
-            <li class="step"><div class="badge">2</div><div><strong>Browser → Proxy</strong><div class="small muted">Proxy may modify headers, cache, or block content.</div></div></li>
-            <li class="step"><div class="badge">3</div><div><strong>Proxy → Website</strong><div class="small muted">Proxy issues the outgoing connection on your behalf.</div></div></li>
-            <li class="step"><div class="badge">4</div><div><strong>Website → Proxy</strong><div class="small muted">Site responds to proxy's IP. Proxy receives data.</div></div></li>
-            <li class="step"><div class="badge">5</div><div><strong>Proxy → Browser</strong><div class="small muted">Proxy forwards response back to the browser.</div></div></li>
-          </ol>
-        </div>
-      </div>
-
-      <aside style="display:flex;flex-direction:column;gap:12px;">
-        <div class="card" style="padding:12px;">
-          <p class="panel-title">Live log</p>
-          <div id="log" class="log" aria-live="polite"></div>
-        </div>
-
-        <div class="card" style="padding:12px;">
-          <p class="panel-title">Response preview</p>
-          <div id="respStatus" class="muted small">No response yet.</div>
-          <div id="respHeaders" class="small muted" style="margin-top:6px;"></div>
-          <pre id="respBody" style="margin-top:8px;background:#f3f6fb;padding:10px;border-radius:8px;max-height:220px;overflow:auto;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace"></pre>
-        </div>
-
-        <div class="card" style="padding:12px;">
-          <p class="panel-title">Capabilities (what this page can/can't do)</p>
-          <ul style="margin:8px 0 0 18px;color:var(--muted);">
-            <li><strong>Can:</strong> Simulate proxy flow, modify simulated headers, and forward requests to a proxy endpoint you control (if it supports CORS).</li>
-            <li><strong>Cannot:</strong> Act as a system HTTP/SOCKS proxy or intercept traffic outside the browser tab.</li>
-          </ul>
-        </div>
-
-      </aside>
-    </div>
-
-    <div class="footer muted" style="margin-top:12px;">
-      <div>Made for demonstration — not a production proxy</div>
-      <div>Tip: run a server-side proxy (Node/Python) and point the "Proxy endpoint" here to test forwarding.</div>
-    </div>
-  </div>
-
-<script>
-(function(){
-  const form = document.getElementById('reqForm');
-  const simulateBtn = document.getElementById('simulateBtn');
-  const logEl = document.getElementById('log');
-  const respBody = document.getElementById('respBody');
-  const respStatus = document.getElementById('respStatus');
-  const respHeaders = document.getElementById('respHeaders');
-  const clearLogs = document.getElementById('clearLogs');
-
-  function log(type, msg){
-    const time = new Date().toLocaleTimeString();
-    const node = document.createElement('div');
-    node.style.marginBottom = '6px';
-    node.innerHTML = `<div style="font-size:12px;color:#9aa7b6">${time} — <strong style="color:${type==='err'?'#ef4444':'#0f1724'}">${type.toUpperCase()}</strong></div>
-                      <div style="margin-top:4px;font-family:ui-monospace,Menlo,monospace;font-size:13px">${escapeHtml(msg)}</div>`;
-    logEl.prepend(node);
-  }
-
-  function escapeHtml(s){
-    if(!s) return '';
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  }
-
-  function simulateFlow({url, method, proxyUrl, anonymize, modifyHeaders, body, contentType}){
-    log('info', `Step 1: Browser requests ${url}`);
-    log('info', `Step 2: Request sent to ${proxyUrl ? 'configured proxy' : 'simulator (no proxy provided)'}${proxyUrl ? ` — proxy endpoint: ${proxyUrl}` : ''}`);
-    if (anonymize) log('info', 'Proxy will anonymize (simulated): client IP hidden, common client headers removed.');
-    if (modifyHeaders) log('info', 'Proxy will modify headers (simulated).');
-
-    if (!proxyUrl) {
-      log('info', 'Simulation only: no network forwarding will occur.');
-      respStatus.textContent = 'Simulation only — no response fetched.';
-      respBody.textContent = '// Simulation complete — no network request was made because no proxy endpoint was supplied.';
-      return;
+    function go(){
+      const url = document.getElementById('url').value.trim();
+      if(!url) return false;
+      // Basic normalization
+      let final = url;
+      if(!/^https?:\/\//i.test(final)) final = 'http://' + final;
+      // The proxy endpoint is proxy.php; pass the target URL as "url" param.
+      // We use encodeURIComponent to keep safe.
+      const proxyUrl = 'proxy.php?url=' + encodeURIComponent(final);
+      document.getElementById('frame').src = proxyUrl;
+      // Update the address bar so link-sharing works
+      try{
+        history.replaceState(null, '', '?u=' + encodeURIComponent(final));
+      }catch(e){}
+      return false;
     }
 
-    // Build fetch target. Convention: proxy endpoint accepts ?target= encoded URL or POST with JSON { target }
-    // We'll try both approaches: prefer GET ?target=, fallback to POST with JSON.
-    const encoded = encodeURIComponent(url);
-    const tryUrl = proxyUrl + (proxyUrl.includes('?') ? '&' : '?') + 'target=' + encoded;
-
-    const headers = {};
-    if (contentType) headers['Content-Type'] = contentType;
-    if (modifyHeaders) headers['X-Forwarded-By'] = 'BrowserProxySimulator/1.0';
-    if (anonymize) headers['X-Simulated-Anonymize'] = 'true';
-    log('info', `Step 3: Proxy will forward request to the website: ${url}`);
-
-    // First attempt: GET to proxy endpoint with ?target=...
-    fetch(tryUrl, { method: method === 'GET' ? 'GET' : 'POST', headers })
-      .then(async (r) => {
-        log('info', `Step 4: Proxy received response — status ${r.status}`);
-        respStatus.textContent = `Status: ${r.status} ${r.statusText}`;
-        // headers (best-effort)
-        const entries = [];
-        try {
-          r.headers.forEach((v,k) => entries.push(`${k}: ${v}`));
-        } catch(e){/* ignore */}
-        respHeaders.textContent = entries.join('\n');
-        const text = await r.text();
-        respBody.textContent = text;
-        log('info', 'Step 5: Proxy forwarded response back to browser (displayed in preview).');
-      })
-      .catch(async (err) => {
-        // If GET approach failed (CORS, 404), attempt fallback POST JSON with target & body
-        log('err', `Proxy GET attempt failed: ${err.message || err}`);
-        log('info', 'Falling back to POST JSON to proxy endpoint (if supported).');
-        try {
-          const postRes = await fetch(proxyUrl, {
-            method: 'POST',
-            headers: Object.assign({'Content-Type':'application/json'}, headers),
-            body: JSON.stringify({ target: url, method, body })
-          });
-          respStatus.textContent = `Status: ${postRes.status} ${postRes.statusText}`;
-          const entries = [];
-          try { postRes.headers.forEach((v,k) => entries.push(`${k}: ${v}`)); } catch(e){}
-          respHeaders.textContent = entries.join('\n');
-          const txt = await postRes.text();
-          respBody.textContent = txt;
-          log('info', 'POST fallback succeeded — response displayed.');
-        } catch (err2) {
-          log('err', `Proxy POST fallback failed: ${err2.message || err2}`);
-          respStatus.textContent = 'Error fetching via proxy. Check console and proxy CORS configuration.';
-          respBody.textContent = '';
-        }
-      });
-  }
-
-  form.addEventListener('submit', (ev) => {
-    ev.preventDefault();
-    const payload = {
-      url: document.getElementById('target').value.trim(),
-      method: document.getElementById('method').value,
-      proxyUrl: document.getElementById('proxyUrl').value.trim(),
-      anonymize: document.getElementById('anonymize').checked,
-      modifyHeaders: document.getElementById('modifyHeaders').checked,
-      body: document.getElementById('body').value,
-      contentType: document.getElementById('contentType').value
-    };
-    if (!payload.url) { alert('Please enter a target URL'); return; }
-    simulateFlow(payload);
-  });
-
-  simulateBtn.addEventListener('click', () => {
-    const payload = {
-      url: document.getElementById('target').value.trim() || 'https://example.com/',
-      method: document.getElementById('method').value,
-      proxyUrl: '', // simulate only
-      anonymize: document.getElementById('anonymize').checked,
-      modifyHeaders: document.getElementById('modifyHeaders').checked,
-      body: document.getElementById('body').value,
-      contentType: document.getElementById('contentType').value
-    };
-    simulateFlow(payload);
-  });
-
-  clearLogs.addEventListener('click', () => { logEl.innerHTML = ''; respBody.textContent=''; respStatus.textContent='No response yet.'; respHeaders.textContent=''; });
-
-  // Small helper: prefill with example
-  document.getElementById('target').value = 'https://api.github.com/'; 
-})();
-</script>
+    // Clicks inside the iframe will be handled by proxy link rewriting (server-side).
+  </script>
 </body>
 </html>
