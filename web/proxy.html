@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Simple Web Proxy Interface</title>
+  <title>Simple PHP Web Proxy</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -15,7 +14,7 @@
       margin-bottom: 1.5rem;
     }
     form {
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
     }
     input[type="url"] {
       width: 300px;
@@ -47,9 +46,8 @@
   </style>
 </head>
 <body>
-  <h1>Web Proxy Interface</h1>
-  <!-- User inputs a URL and submits -->
-  <form id="proxyForm" action="/proxy" method="POST" target="proxyFrame">
+  <h1>Simple PHP Web Proxy</h1>
+  <form id="proxyForm" action="proxy.php" method="POST" target="proxyFrame">
     <label for="targetUrl">Enter URL to visit via proxy:</label><br />
     <input
       type="url"
@@ -63,7 +61,6 @@
     />
     <button type="submit">Go</button>
   </form>
-  <!-- Loaded webpage will display here -->
   <iframe name="proxyFrame" title="Proxy Content"></iframe>
 </body>
 </html>
