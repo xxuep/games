@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Convert YouTube Video to MP4 using CloudConvert API</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width: 600px; margin: 2rem auto; padding: 1rem; }
+  input, button { padding: 0.6rem; font-size: 1rem; width: 100%; margin: 0.5rem 0; }
+  #status { margin-top: 1rem; white-space: pre-wrap; }
+</style>
+</head>
+<body>
+<h2>YouTube to MP4 Converter (CloudConvert)</h2>
+<p>Enter a YouTube video URL to convert it to MP4.</p>
+<input type="url" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=VIDEO_ID" />
+<button id="convertBtn">Convert to MP4</button>
+<p id="status"></p>
+<script>
+  // Replace with your CloudConvert API key
+  const API_KEY = "YOUR_CLOUDCONVERT_API_KEY";
+
+  const youtubeUrlInput = document.getElementById("youtubeUrl");
+  const convertBtn = document.getElementById("convertBtn");
+  const statusEl = document.getElementById("status");
+
+  // Validate YouTube URL (simple regex)
+  function isValidYouTubeUrl(url) {
+    try {
+      const parsed = new URL(url);
+      return (
+        (parsed.hostname === "www.youtube.com" || parsed.hostname === "youtube.com" || parsed.hostname === "youtu.be") &&
+        (parsed.searchParams.has("v") || parsed.pathname.length > 1)
+      );
+    } catch {
+      return false;
+    }
+  }
+
+  convertBtn.addEventListener("click", async () => {
+    const url = youtubeUrlInput.value.trim();
+    statusEl.textContent = "";
+    if (!url) {
+      statusEl.textContent = "Please enter a YouTube URL.";
+      return;
+    }
+    if (!isValidYouTubeUrl(url)) {
+      statusEl.textContent = "Please enter a valid YouTube URL.";
+      return;
+    }
+
+    convertBtn.disabled = true;
+    statusEl.textContent = "Starting conversion...";
+    try {
+      // Step 1: Create a CloudConvert job with youtube import
+      const jobResponse = await fetch("https://api.cloudconvert.com/v2/jobs", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          tasks: {
+            "import-youtube": {
+              operation: "import/youtube",
+              youtube_link: url,
+              // Optional: set specific video format it will import the best quality by default
+              // youtube_options: { quality: "bestvideo[ext=mp4]+bestaudio[ext=m4a]/mp4" }
+            },
+            "convert-to-mp4": {
+              operation: "convert",
+              input: ["import-youtube"],
+              output_format: "mp4",
+              video_codec: "h264",
+              audio_codec: "aac",
+              // You can add further conversion options here for quality, resolution, etc.
+              // e.g., bitrate, resolution, or preset.
+            },
+            "export-file": {
+              operation: "export/url",
+              input: ["convert-to-mp4"],
+              inline: false,
+              archive_multiple_files: false
+            }
+          }
+        })
+      });
+
+      if (!jobResponse.ok) {
+        const errorData = await jobResponse.json();
+        throw new Error(errorData.message || "Failed to create job");
+      }
+
+      const jobData = await jobResponse.json();
+      const jobId = jobData.data.id;
+
+      statusEl.textContent = "Converting... Please wait.";
+
+      // Poll job status
+      let jobStatus = "";
+      let exportUrl = "";
+      while (true) {
+        await new Promise(r => setTimeout(r, 3000));
+        const statusResponse = await fetch(`https://api.cloudconvert.com/v2/jobs/${jobId}`, {
+          headers: { Authorization: `Bearer ${API_KEY}` }
+        });
+        if (!statusResponse.ok) {
+          throw new Error("Failed to check job status");
+        }
+        const statusResult = await statusResponse.json();
+        jobStatus = statusResult.data.status;
+
+        if (jobStatus === "error") {
+          throw new Error("Conversion failed.");
+        }
+
+        if (jobStatus === "finished") {
+          // Get export task and file URL
+          const exportTask = Object.values(statusResult.data.tasks).find(t => t.operation === "export/url");
+          if (exportTask && exportTask.result && exportTask.result.files && exportTask.result.files.length > 0) {
+            exportUrl = exportTask.result.files[0].url;
+          }
+          break;
+        }
+        statusEl.textContent = `Conversion in progress... (${jobStatus})`;
+      }
+
+      if (!exportUrl) throw new Error("Failed to retrieve converted file URL.");
+      
+      statusEl.innerHTML = `Conversion completed! <a href="${exportUrl}" target="_blank" rel="noopener" download>Download MP4</a>`;
+    } catch (err) {
+      statusEl.textContent = `Error: ${err.message}`;
+    } finally {
+      convertBtn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>
