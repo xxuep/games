@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Unblocked YouTube Video Player</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    min-height: 100vh;
+    margin: 0;
+  }
+  form {
+    margin-bottom: 1rem;
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+  }
+  input[type="url"] {
+    flex-grow: 1;
+    padding: 0.6rem;
+    font-size: 1rem;
+    border-radius: 4px 0 0 4px;
+    border: none;
+    outline: none;
+  }
+  button {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    border: none;
+    background: #cc0000;
+    color: white;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+  }
+  iframe {
+    width: 80vw;
+    height: 45vw; /* 16:9 aspect ratio */
+    max-width: 1280px;
+    max-height: 720px;
+    border: none;
+    border-radius: 8px;
+    background: #000;
+  }
+  p.error {
+    color: #f44336;
+  }
+</style>
+</head>
+<body>
+
+<form id="videoForm" novalidate>
+  <input type="url" id="youtubeUrl" placeholder="Enter YouTube video URL" required />
+  <button type="submit">Load Video</button>
+</form>
+
+<p id="errorMsg" class="error"></p>
+
+<iframe
+  id="videoPlayer"
+  src=""
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+  allowfullscreen
+  loading="lazy"
+  title="Unblocked YouTube Video"
+  style="display:none;"
+></iframe>
+
+<script>
+  const form = document.getElementById('videoForm');
+  const input = document.getElementById('youtubeUrl');
+  const iframe = document.getElementById('videoPlayer');
+  const errorMsg = document.getElementById('errorMsg');
+
+  function extractVideoID(url) {
+    try {
+      const u = new URL(url);
+      if (u.hostname === 'youtu.be') {
+        return u.pathname.slice(1);
+      } 
+      if (
+        u.hostname === 'www.youtube.com' || 
+        u.hostname === 'youtube.com' || 
+        u.hostname === 'm.youtube.com'
+      ) {
+        return u.searchParams.get('v');
+      }
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    errorMsg.textContent = '';
+    const url = input.value.trim();
+    if (!url) {
+      errorMsg.textContent = 'Please enter a YouTube video URL.';
+      iframe.style.display = 'none';
+      return;
+    }
+    const videoID = extractVideoID(url);
+    if (!videoID) {
+      errorMsg.textContent = 'Invalid YouTube URL.';
+      iframe.style.display = 'none';
+      return;
+    }
+    const embedUrl = `https://www.youtube-nocookie.com/embed/${videoID}?rel=0&modestbranding=1`;
+    iframe.src = embedUrl;
+    iframe.style.display = 'block';
+  });
+</script>
+
+</body>
+</html>
