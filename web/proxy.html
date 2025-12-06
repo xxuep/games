@@ -1,75 +1,55 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>How Proxy Browsers Work</title>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    max-width: 700px;
-    margin: 2rem auto;
-    padding: 1rem;
-    line-height: 1.6;
-    background: #f9f9f9;
-    color: #333;
-  }
-  h1, h2 {
-    color: #005a9e;
-  }
-  ul {
-    padding-left: 1.2rem;
-  }
-  section {
-    background: #fff;
-    padding: 1rem 1.2rem;
-    margin-bottom: 1.5rem;
-    border-radius: 6px;
-    box-shadow: 0 0 8px #ddd;
-  }
-  code {
-    background: #eee;
-    padding: 0.1rem 0.3rem;
-    border-radius: 3px;
-    font-family: Consolas, monospace;
-  }
-</style>
+<html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Axiom Browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser|A|axiom://browser</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined">
+    <link rel="stylesheet" href="styles/browser.css">
 </head>
-<body>
-  <h1>Proxy Browsers Explained</h1>
 
-  <section>
-    <h2>What is a Proxy Browser?</h2>
-    <p>
-      A proxy browser routes internet traffic through an intermediary server (proxy) rather than connecting directly to websites. This masks your IP, hides your location, and can bypass network restrictions.
-    </p>
-  </section>
+<body style="color: rgb(255, 255, 255);">
+    <div id="tabs">
+        <div class="tab active" name="tertiary" draggable="true" id="MTc2NDk5NTkwMzg5Mw==" style="background-color: rgba(42, 42, 42, 0.3) !important; border-color: rgb(74, 74, 74) !important; color: rgb(255, 255, 255) !important; backdrop-filter: blur(10px) !important;">New Tab
+                <span onclick="closeTab('MTc2NDk5NTkwMzg5Mw==', event)">
+                    <span class="material-symbols-outlined" style="font-size: 16px; cursor: pointer;">
+                        close
+                    </span>
+                </span></div><div id="addTab" draggable="false">
+            <span class="material-symbols-outlined" name="textSecondary" style="color: rgb(212, 212, 212) !important;">
+                add
+            </span>
+        </div>
+    </div>
+    <div id="navbar">
+        <button class="nav-btn" name="tertiary" id="backBtn" onclick="goBack()" style="background-color: rgba(42, 42, 42, 0.3) !important; border-color: rgb(74, 74, 74) !important; color: rgb(255, 255, 255) !important; backdrop-filter: blur(10px) !important;">
+            <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+        <button class="nav-btn" name="tertiary" id="forwardBtn" onclick="goForward()" style="background-color: rgba(42, 42, 42, 0.3) !important; border-color: rgb(74, 74, 74) !important; color: rgb(255, 255, 255) !important; backdrop-filter: blur(10px) !important;">
+            <span class="material-symbols-outlined">arrow_forward</span>
+        </button>
+        <button class="nav-btn" name="tertiary" id="refreshBtn" onclick="refreshPage()" style="background-color: rgba(42, 42, 42, 0.3) !important; border-color: rgb(74, 74, 74) !important; color: rgb(255, 255, 255) !important; backdrop-filter: blur(10px) !important;">
+            <span class="material-symbols-outlined">refresh</span>
+        </button>
+        <input type="text" id="urlBar" name="tertiary" placeholder="Enter URL..." onkeypress="handleUrlKeypress(event)" style="background-color: rgba(42, 42, 42, 0.3) !important; border-color: rgb(74, 74, 74) !important; color: rgb(255, 255, 255) !important; backdrop-filter: blur(10px) !important;">
+        <div class="left-controls">
+            <button class="nav-btn" name="tertiary" id="dropdownButton" style="display: none; background-color: rgba(42, 42, 42, 0.3) !important; border-color: rgb(74, 74, 74) !important; color: rgb(255, 255, 255) !important; backdrop-filter: blur(10px) !important;">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </div>
 
-  <section>
-    <h2>How Proxy Browsers Work</h2>
-    <ol>
-      <li><strong>Request Redirection:</strong> Your browser sends webpage requests to the proxy server first.</li>
-      <li><strong>Proxy Processing:</strong> The proxy forwards requests to the target website on your behalf.</li>
-      <li><strong>Response Delivery:</strong> The website response returns to the proxy, which relays it to your browser.</li>
-    </ol>
-  </section>
+    </div>
+    <div id="frames">
+    <iframe id="frame-MTc2NDk5NTkwMzg5Mw==" src="/start.html" class="active"></iframe></div>
+    <script src="scripts/browser.js"></script>
+    <script src="scripts/global.js" type="module"></script>
 
-  <section>
-    <h2>Role of HTML in Proxy Browsers</h2>
-    <ul>
-      <li><strong>Content Rendering:</strong> The proxy fetches HTML, which defines page structure and content.</li>
-      <li><strong>Resource Loading:</strong> HTML references images, CSS, and JS, which the proxy also retrieves and delivers.</li>
-      <li><strong>Potential Modifications:</strong> Proxies might inject ads or rewrite HTML content before sending to your browser.</li>
-    </ul>
-  </section>
 
-  <section>
-    <h2>Using Proxy Browsers</h2>
-    <ul>
-      <li><strong>Browser Settings:</strong> Configure proxy servers in browser network settings.</li>
-      <li><strong>Browser Extensions:</strong> Use extensions to manage proxies with advanced controls.</li>
-      <li><strong>Proxy Services:</strong> Subscribe to third-party services offering proxy networks for anonymity.</li>
-    </ul>
-  </section>
-</body>
-</html>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=G-EP8214CHBW"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-EP8214CHBW');
+</script>
+
+</body><!-- Google tag (gtag.js) --></html>
