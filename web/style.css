@@ -1,0 +1,160 @@
+/* === Global Reset === */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+body {
+  background: #0f0f0f;
+  overflow: hidden;
+  color: white;
+}
+
+/* === Layout === */
+.container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-content {
+  width: 600px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* === Greeting Section === */
+.greeting-section h2 {
+  font-size: 40px;
+  font-weight: 500;
+}
+
+.greeting-section .evening {
+  opacity: 0.8;
+}
+
+#welcomeMessage {
+  margin-top: 4px;
+  font-size: 16px;
+  color: rgba(255,255,255,0.7);
+}
+
+/* === Time Section === */
+.time-section p {
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 15px;
+  width: fit-content;
+
+  /* glass UI */
+  background: rgba(42,42,42,0.3);
+  border: 1px solid rgba(74,74,74,0.7);
+  backdrop-filter: blur(10px);
+}
+
+/* === Search Section === */
+.search-section {
+  width: 100%;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 14px 18px;
+  border-radius: 14px;
+
+  background: rgba(39,39,39,0.3);
+  border: 1px solid rgba(74,74,74,0.6);
+  backdrop-filter: blur(10px);
+}
+
+.search-icon {
+  font-size: 22px;
+  opacity: 0.8;
+}
+
+.search-container input {
+  flex: 1;
+  background: none;
+  border: none;
+  font-size: 16px;
+  color: white;
+  outline: none;
+}
+
+/* === Shortcut Grid === */
+.shortcuts-section {
+  margin-top: 10px;
+}
+
+#quickItems {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+}
+
+.quickItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.icon-container {
+  width: 60px;
+  height: 60px;
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(42,42,42,0.3);
+  border: 1px solid rgba(74,74,74,0.7);
+  backdrop-filter: blur(10px);
+
+  transition: background 0.25s ease, transform 0.2s;
+}
+
+.icon-container span {
+  font-size: 30px;
+}
+
+.quickItem:hover .icon-container {
+  transform: scale(1.07);
+  background: rgba(90,90,90,0.35);
+}
+
+.quickItem span[name="textSecondary"] {
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* === Mobile === */
+@media (max-width: 600px) {
+  .main-content {
+    gap: 30px;
+  }
+
+  #quickItems {
+    gap: 20px;
+  }
+
+  .icon-container {
+    width: 52px;
+    height: 52px;
+  }
+
+  .icon-container span {
+    font-size: 26px;
+  }
+}
